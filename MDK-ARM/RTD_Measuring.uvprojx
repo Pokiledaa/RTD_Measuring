@@ -541,6 +541,16 @@
               <FileType>1</FileType>
               <FilePath>..\RTD_LIB\RTD.c</FilePath>
             </File>
+            <File>
+              <FileName>RTD_Calibration_Senario.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\RTD_LIB\RTD_Calibration_Senario.c</FilePath>
+            </File>
+            <File>
+              <FileName>RTD_Calibration_Senario.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\RTD_LIB\RTD_Calibration_Senario.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

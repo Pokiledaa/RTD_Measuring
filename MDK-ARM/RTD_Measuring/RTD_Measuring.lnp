@@ -27,6 +27,7 @@
 "rtd_measuring\stm32g0xx_hal_tim_ex.o"
 "rtd_measuring\system_stm32g0xx.o"
 "rtd_measuring\rtd.o"
+"rtd_measuring\rtd_calibration_senario.o"
 --strict --scatter "RTD_Measuring\RTD_Measuring.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -31,6 +31,7 @@ typedef enum{
 	Convertion_Ongooing = 1,
 }Convertion_State_t;
 
+
 typedef struct{
 	Convertion_State_t Convertion_State;
 	uint16_t ADC_Value_Raw[RTD_CHANNEL_NUM];
@@ -265,6 +266,59 @@ float RTD_Full_Convertion(RTD_t* rtd){
 	}
 	
 	return rtd_temp;
+}
+
+/************************************************************************************************
+*																	RTD Calibration Functions
+************************************************************************************************/
+
+void RTD_Calibrate_Set_ADC_Raw_Max_Temp (RTD_t* rtd , uint16_t adc_raw){
+	rtd->calibration.ADC_Raw_Max_Temp = adc_raw;
+}
+
+void RTD_Calibrate_Set_ADC_Raw_Min_Temp (RTD_t* rtd, uint16_t adc_raw){
+	rtd->calibration.ADC_Raw_Min_Temp = adc_raw;
+}
+
+void RTD_Calibrate_Set_ADC_Max_Temp (RTD_t* rtd , float temp){
+	rtd->calibration.ADC_Max_Temp = temp;
+}
+
+void RTD_Calibrate_Set_ADC_Min_Temp (RTD_t* rtd, float temp){
+	rtd->calibration.ADC_Min_Temp = temp;
+}
+
+void RTD_Calibrate_Set_Gain_Factor (RTD_t* rtd, float gf){
+	rtd->calibration.Gain_Factor = gf;
+}
+
+void RTD_Calibrate_Set_Refrence_Resistor (RTD_t* rtd ,float ref_resistor){
+	rtd->calibration.Refrence_Resistor = ref_resistor;
+}
+
+
+RTD_Calibrate_status_Type RTD_Calibration_Calculate_Gain_Factor (RTD_t* rtd){
+	
+	RTD_Calibration_Status_t stat = Calibration_Done;
+	
+	if( rtd->calibration.ADC_Raw_Max_Temp &&  rtd->calibration.ADC_Raw_Min_Temp == 0 ){
+		stat = Calibration_Error ; //  error on not setting ADC_Raw_Max_Temp and ADC_Raw_Min_Temp
+	}
+	if( rtd->calibration.ADC_Max_Temp ==0 && rtd-> calibration.ADC_Min_Temp== 0 ){
+		stat = Calibration_Error ; //  error on not setting ADC_Max_Temp and ADC_Min_Temp
+	}
+	/**
+	* A = ADC_Raw_Max_Temp - ADC_Raw_Min_Temp
+	* B = ADC_Max_Temp - ADC_Min_Temp
+	* GF(Gain Factor) = B / A 
+	*/
+	float A = rtd->calibration.ADC_Raw_Max_Temp - rtd->calibration.ADC_Raw_Min_Temp;
+	float B = rtd->calibration.ADC_Max_Temp - rtd->calibration.ADC_Min_Temp;
+	float GF = B / A;
+	
+	rtd->calibration.Gain_Factor = GF;
+	
+	return stat;
 }
 
 

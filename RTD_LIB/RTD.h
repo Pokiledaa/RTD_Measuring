@@ -37,6 +37,13 @@ typedef enum {
 }RTD_Status_t;
 
 
+typedef enum{
+	Calibration_Done = 1u,
+	Calibration_Ongoing = 2u,
+	Calibration_Error = 3u,
+}RTD_Calibration_Status_t;
+
+
 typedef enum {
 	RTD_Sampling_Status_Ongoing = 0,
 	RTD_Sampling_Status_Finished = 1,
@@ -69,6 +76,8 @@ typedef struct{
 	uint8_t channel;
 	float base_resistance;
 }RTD_t;
+
+typedef uint8_t RTD_Calibrate_status_Type;
 
 
 
@@ -193,6 +202,15 @@ uint16_t RTD_Raw_ADC_Mean_Get(RTD_t* rtd);
 *             RTD module
 *****************************************************************************************************/
 float RTD_Full_Convertion(RTD_t* rtd);
+
+
+void RTD_Calibrate_Set_ADC_Raw_Max_Temp (RTD_t* rtd , uint16_t adc_raw);
+void RTD_Calibrate_Set_ADC_Raw_Min_Temp (RTD_t* rtd, uint16_t adc_raw);
+void RTD_Calibrate_Set_ADC_Max_Temp (RTD_t* rtd , float temp);
+void RTD_Calibrate_Set_ADC_Min_Temp (RTD_t* rtd, float temp);
+void RTD_Calibrate_Set_Gain_Factor (RTD_t* rtd, float gf);
+void RTD_Calibrate_Set_Refrence_Resistor (RTD_t* rtd ,float ref_resistor);
+RTD_Calibrate_status_Type RTD_Calibration_Calculate_Gain_Factor (RTD_t* rtd);
 
 
 
