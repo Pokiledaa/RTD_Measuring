@@ -35,5 +35,5 @@ rtd_measuring/rtd.o: ..\RTD_LIB\RTD.c ..\RTD_LIB\RTD.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_pwr.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_pwr_ex.h \
   ..\Core\Inc\dma.h ..\Core\Inc\main.h ..\Core\Inc\adc.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\Core\Inc\config.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h

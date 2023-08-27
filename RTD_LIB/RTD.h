@@ -1,8 +1,22 @@
 #ifndef _RTD_H_
 #define _RTD_H_
-
-
 #include "stm32g0xx_hal.h"
+
+
+
+#define POLLING_SETUP     0
+#define DMA_SETUP         1
+#define INTERRUP_SETUP    2
+
+#define RTD_CHANNEL_NUM  3
+#define RTD_MEANING_INTERVAL  50
+
+#define RTD_READING_METHOD    DMA_SETUP
+
+
+
+#define RTD_ADC            hadc1
+#define RTD_CHANNEL_NUM    3
 
 typedef struct {
 	uint16_t RTD_ADC_Sampling_Buffer[1024];
@@ -59,14 +73,15 @@ typedef struct{
 
 
 
+void RTD_Enable(RTD_t* rtd);
+
 /****************************************************************************************************
 *
 *	@DISCRIPTION : This function initialize the RTD Module base on their RTD OBJECT 
 * 							 configuration and setup of the driver for reading the RTD Measurands
-* @param rtd : This is the rtd handler object which has all the rtd unit related parameter
 *
 *****************************************************************************************************/
-void RTD_Init(RTD_t* rtd);
+void RTD_Init();
 
 
 

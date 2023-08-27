@@ -1,7 +1,6 @@
 #include "RTD.h"
 #include "dma.h"
 #include "adc.h"
-#include "config.h"
 #include <math.h>
 
 
@@ -12,6 +11,11 @@
 ***********************************************************************************************/
 #define RTD_A 3.9083e-3
 #define RTD_B -5.775e-7
+
+
+float res_test = 90;
+	 
+
 
 /**********************************************************************************************
 *																	PRIVATE VARIABLES
@@ -70,12 +74,26 @@ static void RTD_Raw_Adc_Mean(RTD_t* rtd,uint16_t* raw_adc);
 
 
 
+void RTD_Enable(RTD_t* rtd){
+	rtd->enable = RTD_ENABLE;
+	rtd->status = RTD_Status_Data_Unvalid;
+	rtd->sampling_status = RTD_Sampling_Status_Ongoing;
+	rtd->measurment.RTD_Resistance = 0;
+	rtd->measurment.RTD_Tempreture = 0;
+}
+
 /*************************INITIATOR FOR RTD MODULE*************************************/
-void RTD_Init(RTD_t* rtd){
+void RTD_Init(void){
 		/*RTD CONFIGURATION WITH ADC-DMA */
 		
 		/*STEP 1 Configuration of DMA*/
-		dma_config();
+	__HAL_RCC_DMA1_CLK_ENABLE();
+	
+	/* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+		//dma_config();
 		/*STEP 2 Configuration of ADC in DMA Read Mode*/
 		adc_config_dma();
 		/*STEP 3 Configuration of ADC Channels*/
@@ -86,13 +104,6 @@ void RTD_Init(RTD_t* rtd){
 		calibrate_adc(&RTD_ADC);
 		/*STEP 5 Start ADC Continious Convertion with DMA*/
 		HAL_ADC_Start_DMA(&RTD_ADC,(uint32_t*)adh.ADC_Value_Raw,RTD_CHANNEL_NUM);
-	
-	
-		rtd->enable = RTD_ENABLE;
-	  rtd->status = RTD_Status_Data_Unvalid;
-		rtd->sampling_status = RTD_Sampling_Status_Ongoing;
-		rtd->measurment.RTD_Resistance = 0;
-		rtd->measurment.RTD_Tempreture = 0;
 }
 
 /*************************CALCULATOR FOR RTD TEMPRETURE*************************************/
@@ -111,8 +122,10 @@ float RTD_Resistance_Get (RTD_t* rtd){
 /*************************CALCULATROR FOR RTD TEMPRETURE IN MATHEMATICAL MODE*************************************/
 void RTD_Tempreture_Read_Mathematicall(RTD_t* rtd,float rtd_resistance){
 	
+	
 	float Z1, Z2, Z3, Z4, Rt, temp;
-	uint8_t skip_flag = 0;
+	uint8_t skip_flag = RESET;
+
 	
 	Z1 = -RTD_A;
   Z2 = RTD_A * RTD_A - (4 * RTD_B);
@@ -124,10 +137,9 @@ void RTD_Tempreture_Read_Mathematicall(RTD_t* rtd,float rtd_resistance){
 
   if (temp >= 0){
     skip_flag = SET;
-		rtd->measurment.RTD_Tempreture = temp;
 	}
 
-	if(skip_flag){
+	if(skip_flag == RESET){
 		
 		// ugh.
 		rtd_resistance /= rtd->base_resistance;
@@ -145,8 +157,8 @@ void RTD_Tempreture_Read_Mathematicall(RTD_t* rtd,float rtd_resistance){
 		temp -= 2.8183e-8 * rpoly;
 		rpoly *= rtd_resistance; // ^5
 		temp += 1.5243e-10 * rpoly;
-		rtd->measurment.RTD_Tempreture = temp;
 	}
+	rtd->measurment.RTD_Tempreture = temp;
  
 }
 
@@ -225,7 +237,7 @@ uint16_t RTD_Raw_ADC_Mean_Get(RTD_t* rtd){
 
 float RTD_Full_Convertion(RTD_t* rtd){
 	uint16_t rtd_raw_adc_mean;
-	float rtd_temp;
+	float rtd_temp = -10;
 	
 	/*Here is The Function That Reads The Actual ADC we have 2 method For this one :
 	1 - Polling
@@ -245,13 +257,12 @@ float RTD_Full_Convertion(RTD_t* rtd){
 		RTD_Raw_Adc_Mean(rtd,rtd->measurment.RTD_ADC_Sampling_Buffer);  /*Meaning The ADC raw value base on the interval that has been set*/
 		rtd_raw_adc_mean = RTD_Raw_ADC_Mean_Get(rtd);  						/*Gettig The ADC raw mean value*/
 		RTD_Resistance_Read(rtd,rtd_raw_adc_mean);     						/*Calculating The RTD resistance */
-		RTD_Tempreture_Read_Mathematicall(rtd,rtd->measurment.RTD_Resistance);           /*Calculating The RTD tempreture */
+		RTD_Tempreture_Read_Mathematicall(rtd,rtd->measurment.RTD_Resistance);          /*Calculating The RTD tempreture */
 		rtd_temp = RTD_Tempreture_Get(rtd);                       /*Getting the RTD tempreture */
 	}
 	else{
 		rtd_temp = rtd->measurment.RTD_Tempreture;    //we send the buffer output when we are sampling
 	}
-	
 	
 	return rtd_temp;
 }
