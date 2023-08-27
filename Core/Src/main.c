@@ -61,7 +61,8 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
 	led_config();
-	RTD_Init(&RTD_3);
+	RTD_Init(&RTD_3);   // Initializing The Library
+	RTD_Enable(&RTD_3); // Enableing The RTD Module
   while (1)
   {
 		led_on();

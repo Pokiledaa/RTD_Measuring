@@ -84,26 +84,26 @@ void RTD_Enable(RTD_t* rtd){
 
 /*************************INITIATOR FOR RTD MODULE*************************************/
 void RTD_Init(void){
-		/*RTD CONFIGURATION WITH ADC-DMA */
-		
-		/*STEP 1 Configuration of DMA*/
+	/*RTD CONFIGURATION WITH ADC-DMA */
+	
+	/*STEP 1 Configuration of DMA*/
 	__HAL_RCC_DMA1_CLK_ENABLE();
 	
 	/* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-		//dma_config();
-		/*STEP 2 Configuration of ADC in DMA Read Mode*/
-		adc_config_dma();
-		/*STEP 3 Configuration of ADC Channels*/
-		adc_config_channel(&RTD_3_ADC_Channel);
-		adc_config_channel(&RTD_2_ADC_Channel);
-		adc_config_channel(&RTD_1_ADC_Channel);
-		/*STEP 4 ADC Calibration*/
-		calibrate_adc(&RTD_ADC);
-		/*STEP 5 Start ADC Continious Convertion with DMA*/
-		HAL_ADC_Start_DMA(&RTD_ADC,(uint32_t*)adh.ADC_Value_Raw,RTD_CHANNEL_NUM);
+	HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+	//dma_config();
+	/*STEP 2 Configuration of ADC in DMA Read Mode*/
+	adc_config_dma();
+	/*STEP 3 Configuration of ADC Channels*/
+	adc_config_channel(&RTD_3_ADC_Channel);
+	adc_config_channel(&RTD_2_ADC_Channel);
+	adc_config_channel(&RTD_1_ADC_Channel);
+	/*STEP 4 ADC Calibration*/
+	calibrate_adc(&RTD_ADC);
+	/*STEP 5 Start ADC Continious Convertion with DMA*/
+	HAL_ADC_Start_DMA(&RTD_ADC,(uint32_t*)adh.ADC_Value_Raw,RTD_CHANNEL_NUM);
 }
 
 /*************************CALCULATOR FOR RTD TEMPRETURE*************************************/
